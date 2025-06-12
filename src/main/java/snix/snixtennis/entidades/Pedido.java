@@ -27,15 +27,19 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nombre;
+    private Double total;
+    private Integer cantidad;
     @ManyToOne
     private InformacionCliente cliente;
     private Carrito carro;
 
-    public Pedido(String id, String nombre, InformacionCliente cliente, Carrito carro) {
+    public Pedido(String id, String nombre, InformacionCliente cliente, Carrito carro, Integer cantidad, Double total) {
         this.id = id;
         this.nombre = nombre;
         this.cliente = cliente;
         this.carro = carro;
+        this.cantidad = cantidad;
+        this.total = total;
     }
     
     

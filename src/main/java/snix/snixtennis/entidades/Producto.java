@@ -28,17 +28,20 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nombre;
+    private Integer stock;
+    private String marca;
     private String imageUrl;
     private Double precio;
-    @ManyToMany
-    private List<Pedido> pedidos;
+    
 
-    public Producto(String id, String nombre, String imageUrl, Double precio, List<Pedido> pedidos) {
+    public Producto(String id, String nombre, String imageUrl, Double precio, Integer stock, String marca) {
         this.id = id;
+        this.marca = marca;
         this.nombre = nombre;
         this.imageUrl = imageUrl;
         this.precio = precio;
-        this.pedidos = pedidos;
+        this.stock = stock;
+     
     }
     
     
