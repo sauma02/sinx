@@ -19,4 +19,5 @@ import snix.snixtennis.DTOs.ProductoDTO;
 public class ItemCarrito {
     private ProductoDTO dto;
     private Integer cantidad;
+    private Double subTotal;
 }

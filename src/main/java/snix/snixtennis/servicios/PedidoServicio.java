@@ -4,10 +4,12 @@
  */
 package snix.snixtennis.servicios;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import snix.snixtennis.entidades.Carrito;
 import snix.snixtennis.entidades.InformacionCliente;
+import snix.snixtennis.entidades.ItemCarrito;
 import snix.snixtennis.entidades.Pedido;
 import snix.snixtennis.repositorios.PedidoRepositorio;
 
@@ -20,11 +22,18 @@ public class PedidoServicio {
     @Autowired
     private PedidoRepositorio pedidoRepositorio;
     
-    public Pedido crearPedido(Carrito carrito, InformacionCliente cliente){
+    public Pedido crearPedido(List<ItemCarrito> carrito, InformacionCliente cliente){
         Pedido pedido = new Pedido();
         pedido.setNombre("Pedido: " + cliente.getNombre());
         pedido.setCarro(carrito);
         pedido.setCliente(cliente);
+        Double suma = 0.0;
+        for(Integer i = 0; i< carrito.size(); i++){
+            ItemCarrito item= carrito.get(i);
+            suma += item.getSubTotal();
+            
+        }
+        pedido.setTotal(suma);
         pedidoRepositorio.save(pedido);
         return pedido;
         

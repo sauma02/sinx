@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,9 +32,9 @@ public class Pedido {
     private Integer cantidad;
     @ManyToOne
     private InformacionCliente cliente;
-    private Carrito carro;
+    private List<ItemCarrito> carro;
 
-    public Pedido(String id, String nombre, InformacionCliente cliente, Carrito carro, Integer cantidad, Double total) {
+    public Pedido(String id, String nombre, InformacionCliente cliente, List<ItemCarrito> carro, Integer cantidad, Double total) {
         this.id = id;
         this.nombre = nombre;
         this.cliente = cliente;
