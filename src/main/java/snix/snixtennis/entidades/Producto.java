@@ -4,11 +4,14 @@
  */
 package snix.snixtennis.entidades;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +33,8 @@ public class Producto {
     private String nombre;
     private Integer stock;
     private String marca;
+    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Archivo> imagenes;
     private String imageUrl;
     private Double precio;
     

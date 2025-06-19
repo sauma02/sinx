@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,12 +38,12 @@ import snix.snixtennis.servicios.PedidoServicio;
  * @author sauma
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/pedido")
 public class PedidoController {
     @Autowired
     private PedidoServicio pedidoServicio;
-    @Autowired
-    private CarritoServicio carroServicio;
+   
     @GetMapping("/hacerPedido/{carrito}")
     @ResponseBody
     public ResponseEntity<?> pedidoInfo(@PathVariable("carrito") Carrito carrito, HttpSession session){
@@ -103,19 +104,8 @@ public class PedidoController {
             
         }
     }
-    @PostMapping("/carrito/procederPedido")
-    public String cerrarCarrito(@Valid Carrito carro, Model model){
-        
-        try {
-           carroServicio.crearCarro(carro);
-           return "redirect:/hacerPedido/"+carro;
-        } catch (Exception e) {
-            System.err.println("Error: "+  e.getMessage());
-            return "redirect:/";
-        
-        }
-        
-    }
+    
+    
     
     
 }

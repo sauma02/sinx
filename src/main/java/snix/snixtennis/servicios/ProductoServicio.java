@@ -33,6 +33,10 @@ public class ProductoServicio {
         }
         
     }
+    public Producto crearProducto(Producto producto){
+           return productoRepositorio.save(producto);
+    }
+    
 
     
 }
