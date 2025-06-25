@@ -5,20 +5,31 @@
 package snix.snixtennis.controladores;
 
 import jakarta.servlet.http.HttpSession;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import snix.snixtennis.entidades.Archivo;
 import snix.snixtennis.entidades.Producto;
+import snix.snixtennis.servicios.ArchivoServicio;
 import snix.snixtennis.servicios.ProductoServicio;
 
 /**
@@ -30,6 +41,12 @@ import snix.snixtennis.servicios.ProductoServicio;
 public class AdminController {
     @Autowired
     private ProductoServicio productoServicio;
+    @Autowired
+    private ArchivoServicio archivoServicio;
+    
+    @Value("${valor.ruta}")
+    private String ruta;
+    
     
     @GetMapping
     @ResponseBody
@@ -55,12 +72,99 @@ public class AdminController {
     
    @PostMapping("/admin/registrarProducto")
    @ResponseBody
-   public ResponseEntity<?> registrarProducto(@Valid Producto producto){
+   public ResponseEntity<?> registrarProducto(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile [] files, HttpSession session){
        Map<String, Object> response = new HashMap<>();
+       List<Archivo> imagenes = new ArrayList<>();
+       Path rutaFinal = Paths.get(ruta + producto.getNombre().trim() +"/".trim());
        try {
-           return null;
+           
+           
+           if(files.length == 0){
+               producto.setImagenes(imagenes);
+               productoServicio.crearProducto(producto);
+               Files.createDirectories(rutaFinal);
+               response.put("clase", "warning");
+               response.put("mensaje", "Se creo el producto sin imagenes");
+               return ResponseEntity.ok().body(response);
+           }
+           Files.createDirectories(rutaFinal);
+           for (MultipartFile file : files) {
+              
+              Archivo imagen = archivoServicio.crearArchivo(file, file.getOriginalFilename(), file.getContentType(), this.ruta + producto.getNombre() + "/", producto);
+              
+              if(imagen == null){
+                  break;
+              }
+              imagenes.add(imagen);
+           }
+           producto.setImagenes(imagenes);
+           productoServicio.crearProducto(producto);
+           response.put("clase", "success");
+           response.put("mensaje", "Exito al guardar producto");
+           session.setAttribute("producto", producto);
+           return ResponseEntity.ok().body(response);
        } catch (Exception e) {
-           return null;
+          
+           response.put("clase", "error");
+           response.put("mensaje", "Error inesperado encontrado"+e.getMessage());
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+           
+           
        }
    }
+   @GetMapping("/admin/editarProducto/{id}")
+   @ResponseBody
+   public ResponseEntity<?> editarProducto(@PathVariable("id") String id, HttpSession session){
+       Map<String, Object> response = new HashMap<>();
+       Producto pro = productoServicio.listarProductoPorId(id);
+       session.getAttribute("producto");
+       response.put("producto", pro);
+       return ResponseEntity.ok().body(response);
+   }
+   
+   @PostMapping("/admin/editarProducto")
+   @ResponseBody
+   public ResponseEntity<?> editarProductoForm(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile [] files){
+       Map<String, Object> response = new HashMap<>();
+       
+       try {
+           if(producto.getImagenes() == null || producto.getImagenes().isEmpty()){
+           List<Archivo> imagenes = new ArrayList<>();
+               for (MultipartFile file : files) {
+                   Archivo imagen = archivoServicio.crearArchivo(file, file.getOriginalFilename(), file.getContentType(), this.ruta + producto.getNombre() + "/", producto);
+                   if(imagen == null){
+                       break;
+                   }
+                   imagenes.add(imagen);
+               }
+               producto.setImagenes(imagenes);
+               productoServicio.editarProducto(producto);
+               response.put("clase", "success");
+               response.put("mensaje", "Exito al editar producto");
+               return ResponseEntity.ok().body(response);
+           }else{
+               List<Archivo> imagenes = producto.getImagenes();
+           
+           for (MultipartFile file : files) {
+               Archivo imagen = archivoServicio.crearArchivo(file, file.getOriginalFilename(), file.getContentType(), this.ruta + producto.getNombre() + "/", producto);
+                   if(imagen == null){
+                       break;
+                   }
+                   imagenes.add(imagen);
+                  
+           }
+           producto.setImagenes(imagenes);
+           productoServicio.editarProducto(producto);
+           response.put("clase", "success");
+           response.put("mensaje", "Exito al editar producto");
+           return ResponseEntity.ok().body(response);
+           }
+           
+       } catch (Exception e) {
+           response.put("clase", "error");
+           response.put("mensaje", "Error inesperado"+e.getMessage());
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+       }
+   }
+   
 }

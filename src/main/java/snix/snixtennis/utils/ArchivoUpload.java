@@ -17,7 +17,7 @@ public class ArchivoUpload {
     
     public String guardarArchivo(MultipartFile file, String url) throws Exception{
         if(!ArchivoUpload.verificarMimeType(file.getContentType())){
-            return "Tipo de archivo no permitido, ingrese solo (png, jpg o jpeg)";
+            return "ErrorMimeType";
         }
         String nombreOriginal = file.getOriginalFilename();
         String extension = ArchivoUpload.obtenerExtension(file.getContentType());
@@ -55,30 +55,28 @@ public class ArchivoUpload {
     
     
     public static boolean verificarMimeType(String mime) throws Exception{
-        switch (mime) {
-            case "image/jpeg":
-                return true;
-            case "image/png":
-                return true;
-            case "image/jpg":
-                return true;
-            default:
-                return false;
-        }
+        return switch (mime) {
+            case "image/jpeg" -> true;
+            case "image/png" -> true;
+            case "image/jpg" -> true;
+            default -> false;
+        };
     }
     
     public static String obtenerExtension(String mime) throws Exception{
         switch (mime) {
-            case "image/jpg":
+            case "image/jpg" -> {
                 return ".jpg";
-            case "image/jpeg":
+            }
+            case "image/jpeg" -> {
                 return ".jpeg";
-            case "image/png":
+            }
+            case "image/png" -> {
                 return ".png";
+            }
                         
                 
-            default:
-                throw new Exception("Error, tipo de archivo no reconocido");
+            default -> throw new Exception("Error, tipo de archivo no reconocido");
         }
     }
 }

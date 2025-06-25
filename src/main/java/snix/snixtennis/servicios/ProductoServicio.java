@@ -37,6 +37,21 @@ public class ProductoServicio {
            return productoRepositorio.save(producto);
     }
     
+    public Producto editarProducto(Producto producto){
+        Optional<Producto> res = productoRepositorio.findById(producto.getId());
+        if(res.isPresent()){
+            Producto pro = res.get();
+            pro.setImagenes(producto.getImagenes());
+            pro.setMarca(producto.getMarca());
+            pro.setNombre(producto.getNombre());
+            pro.setPrecio(producto.getPrecio());
+            pro.setStock(producto.getStock());
+            productoRepositorio.save(pro);
+            return pro;
+        }else{
+            return null;
+        }
+    }
 
     
 }

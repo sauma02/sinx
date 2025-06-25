@@ -6,8 +6,11 @@ package snix.snixtennis.servicios;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import snix.snixtennis.entidades.Archivo;
+import snix.snixtennis.entidades.Producto;
 import snix.snixtennis.repositorios.ArchivoRepositorio;
+import snix.snixtennis.utils.ArchivoUpload;
 
 /**
  *
@@ -16,10 +19,32 @@ import snix.snixtennis.repositorios.ArchivoRepositorio;
 @Service
 public class ArchivoServicio {
     @Autowired
+    private ArchivoUpload uploader;
+    @Autowired
     private ArchivoRepositorio archivoRepositorio;
     
-    public Archivo crearArchivo(Archivo archivo){
-        return archivoRepositorio.save(archivo);
+    public Archivo crearArchivo(MultipartFile file, String fileName, String fileType, String ruta, Producto producto) throws Exception{
+        
+        try {
+        String response = uploader.guardarArchivo(file, ruta);
+        if(response.equals("ErrorMimeType")){
+            return null;       
+        }
+        Archivo imagen = new Archivo();
+        imagen.setFileName(fileName);
+        imagen.setFileType(fileType);
+        imagen.setProducto(producto);
+        imagen.setRuta(ruta);
+        archivoRepositorio.save(imagen);
+        return imagen;
+        
+        } catch (Exception e) {
+            throw new Exception("Error inesperado: "+e.getMessage());
+        }
+        
+        
     }
+    
+    
     
 }

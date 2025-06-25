@@ -4,8 +4,10 @@
  */
 package snix.snixtennis.DTOs;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import snix.snixtennis.entidades.Archivo;
 
 /**
  *
@@ -18,6 +20,6 @@ public class ProductoDTO {
     private String id;
     private String nombre;
     private String marca;
-    private String imageUrl;
+    private List<Archivo> imageUrl;
     private Double precio;
 }
