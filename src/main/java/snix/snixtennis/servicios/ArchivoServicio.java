@@ -4,6 +4,7 @@
  */
 package snix.snixtennis.servicios;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +19,7 @@ import snix.snixtennis.utils.ArchivoUpload;
  */
 @Service
 public class ArchivoServicio {
-    @Autowired
+   
     private ArchivoUpload uploader;
     @Autowired
     private ArchivoRepositorio archivoRepositorio;
@@ -43,6 +44,10 @@ public class ArchivoServicio {
         }
         
         
+    }
+    
+    public void eliminarArchivo(Archivo archvio){
+        archivoRepositorio.delete(archvio);
     }
     
     

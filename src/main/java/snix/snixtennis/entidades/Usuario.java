@@ -29,6 +29,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String nombre;
+    @OneToOne
     private Role rol;
     private String direccion;
     private String numero;

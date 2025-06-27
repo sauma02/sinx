@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import snix.snixtennis.entidades.Archivo;
 import snix.snixtennis.entidades.Producto;
 import snix.snixtennis.repositorios.ProductoRepositorio;
 
@@ -19,6 +20,8 @@ import snix.snixtennis.repositorios.ProductoRepositorio;
 public class ProductoServicio {
     @Autowired
     private ProductoRepositorio productoRepositorio;
+    @Autowired
+    private ArchivoServicio archivoServicio;
 
     public List<Producto> listarProductos(){
         return productoRepositorio.findAll();
@@ -50,6 +53,17 @@ public class ProductoServicio {
             return pro;
         }else{
             return null;
+        }
+    }
+    
+    public void eliminarProducto(String id){
+        Optional<Producto> res = productoRepositorio.findById(id);
+        if(res.isPresent()){
+            Producto pro = res.get();
+            for(Archivo arc : pro.getImagenes()){
+                archivoServicio.eliminarArchivo(arc);
+            }
+            productoRepositorio.delete(pro);
         }
     }
 

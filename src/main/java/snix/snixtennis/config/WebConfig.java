@@ -29,16 +29,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception{
         try {
-            return security.formLogin(form -> form
-            .loginPage("/login")
-            .usernameParameter("username")
-            .passwordParameter("password")
-            .failureUrl("/login?=error")
-            .defaultSuccessUrl("/admin")
-            .permitAll()
-           )
+         return security
+//formLogin(form -> form
+//            .loginPage("/login")
+//            .usernameParameter("username")
+//            .passwordParameter("password")
+//            .failureUrl("/login?=error")
+//            .defaultSuccessUrl("/admin")
+//            .permitAll()
+//           )
                     .authorizeHttpRequests(res -> res
-                    .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**").permitAll()
+                    .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**","/admin/**").permitAll()
                     .anyRequest().authenticated())
                     .build();
         } catch (Exception e) {

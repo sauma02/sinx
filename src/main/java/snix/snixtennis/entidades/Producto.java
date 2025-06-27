@@ -32,19 +32,21 @@ public class Producto {
     private String id;
     private String nombre;
     private Integer stock;
+    private String categoria;
     private String marca;
     @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Archivo> imagenes;
 
     private Double precio;
 
-    public Producto(String id, String nombre, Integer stock, String marca, List<Archivo> imagenes, Double precio) {
+    public Producto(String id, String nombre, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria) {
         this.id = id;
         this.nombre = nombre;
         this.stock = stock;
         this.marca = marca;
         this.imagenes = imagenes;
         this.precio = precio;
+        this.categoria = categoria;
     }
     
 

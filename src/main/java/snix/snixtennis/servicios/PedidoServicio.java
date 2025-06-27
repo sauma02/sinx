@@ -25,7 +25,7 @@ public class PedidoServicio {
     public Pedido crearPedido(List<ItemCarrito> carrito, InformacionCliente cliente){
         Pedido pedido = new Pedido();
         pedido.setNombre("Pedido: " + cliente.getNombre());
-        pedido.setCarro(carrito);
+      
         pedido.setCliente(cliente);
         Double suma = 0.0;
         for(Integer i = 0; i< carrito.size(); i++){
@@ -37,5 +37,8 @@ public class PedidoServicio {
         pedidoRepositorio.save(pedido);
         return pedido;
         
+    }
+    public List<Pedido> listarPedidos(){
+        return pedidoRepositorio.findAll();
     }
 }

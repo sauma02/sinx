@@ -28,8 +28,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import snix.snixtennis.entidades.Archivo;
+import snix.snixtennis.entidades.Pedido;
 import snix.snixtennis.entidades.Producto;
 import snix.snixtennis.servicios.ArchivoServicio;
+import snix.snixtennis.servicios.PedidoServicio;
 import snix.snixtennis.servicios.ProductoServicio;
 
 /**
@@ -38,17 +40,21 @@ import snix.snixtennis.servicios.ProductoServicio;
  */
 @Controller
 @RequestMapping("/admin")
+@ResponseBody
 public class AdminController {
     @Autowired
     private ProductoServicio productoServicio;
     @Autowired
     private ArchivoServicio archivoServicio;
+    @Autowired
+    private PedidoServicio pedidoServicio;
     
     @Value("${valor.ruta}")
     private String ruta;
     
+    //SECCION PRODUCTO ADMIN
     
-    @GetMapping
+    @GetMapping("/listaProductos")
     @ResponseBody
     public ResponseEntity<?> admin(HttpSession session){
         Map<String, Object> response = new HashMap<>();
@@ -70,7 +76,7 @@ public class AdminController {
         }
     }
     
-   @PostMapping("/admin/registrarProducto")
+   @PostMapping("/registrarProducto")
    @ResponseBody
    public ResponseEntity<?> registrarProducto(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile [] files, HttpSession session){
        Map<String, Object> response = new HashMap<>();
@@ -112,7 +118,7 @@ public class AdminController {
            
        }
    }
-   @GetMapping("/admin/editarProducto/{id}")
+   @GetMapping("/editarProducto/{id}")
    @ResponseBody
    public ResponseEntity<?> editarProducto(@PathVariable("id") String id, HttpSession session){
        Map<String, Object> response = new HashMap<>();
@@ -122,7 +128,7 @@ public class AdminController {
        return ResponseEntity.ok().body(response);
    }
    
-   @PostMapping("/admin/editarProducto")
+   @PostMapping("/editarProducto")
    @ResponseBody
    public ResponseEntity<?> editarProductoForm(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile [] files){
        Map<String, Object> response = new HashMap<>();
@@ -165,6 +171,48 @@ public class AdminController {
            response.put("mensaje", "Error inesperado"+e.getMessage());
            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
        }
+   }
+   
+   @PostMapping("/eliminarProducto/{id}")
+   @ResponseBody
+   public ResponseEntity<?> eliminarProducto(@PathVariable("id") String id, HttpSession session){
+       Map<String, Object> response = new HashMap<>();
+       try {
+           productoServicio.eliminarProducto(id);
+           response.put("clase", "success");
+           response.put("mensaje", "Producto eliminado con exito");
+           return ResponseEntity.ok().body(response);
+           
+       } catch (Exception e) {
+           response.put("clase", "error");
+           response.put("mensaje", "Error inesperado "+e.getMessage());
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+       
+       }
+   }
+   
+   @GetMapping("/historialPedidos")
+   @ResponseBody
+   public ResponseEntity<?> historialPedidos(HttpSession session)  {
+       Map<String, Object> response = new HashMap<>();
+       try {
+            List<Pedido> pedido = pedidoServicio.listarPedidos();
+            if(pedido.isEmpty()){
+                response.put("clase", "error");
+                response.put("mensaje", "No hay pedidos registrados");
+                return ResponseEntity.badRequest().body(response);
+                        
+            }
+            session.setAttribute("listaPedidos", pedido);
+            
+            response.put("listaPedido", pedido);
+            return ResponseEntity.ok().body(response);
+
+       } catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+       }
+       
+       
    }
    
 }

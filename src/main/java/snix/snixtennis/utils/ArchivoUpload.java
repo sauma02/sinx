@@ -6,12 +6,14 @@ package snix.snixtennis.utils;
 
 import java.io.File;
 import java.io.IOException;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author sauma
  */
+
 public class ArchivoUpload {
     
     
