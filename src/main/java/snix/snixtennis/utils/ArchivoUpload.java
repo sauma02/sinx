@@ -17,20 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class ArchivoUpload {
     
     
-    public String guardarArchivo(MultipartFile file, String url) throws Exception{
+    public static String guardarArchivo(MultipartFile file, String url) throws Exception{
+        
         if(!ArchivoUpload.verificarMimeType(file.getContentType())){
-            return "ErrorMimeType";
+            return "no";
         }
         String nombreOriginal = file.getOriginalFilename();
         String extension = ArchivoUpload.obtenerExtension(file.getContentType());
         
-        if(nombreOriginal != null && nombreOriginal.endsWith(extension)){
-            return "";
-        }
+        
         
         nombreOriginal = nombreOriginal.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
         
-        String nombre = nombreOriginal + extension.trim();
+        String nombre = nombreOriginal;
         url = url.trim();
         
         if(!url.endsWith(File.separator)){
@@ -44,8 +43,10 @@ public class ArchivoUpload {
         }
         
         try {
-        File imageFile = new File(url + nombre);    
+        File imageFile = new File(url + nombre);   
+           
         file.transferTo(imageFile);
+        
         return nombre;
         } catch (IOException e) {
         e.getStackTrace();
@@ -57,28 +58,44 @@ public class ArchivoUpload {
     
     
     public static boolean verificarMimeType(String mime) throws Exception{
-        return switch (mime) {
-            case "image/jpeg" -> true;
-            case "image/png" -> true;
-            case "image/jpg" -> true;
-            default -> false;
-        };
+        boolean retorno = false;
+
+        switch (mime) {
+            case "image/jpeg":
+                retorno = true;
+                break;
+            case "image/jpg":
+                retorno = true;
+                break;
+            case "image/png":
+                retorno = true;
+                break;
+            
+            default:
+                retorno = false;
+                break;
+        }
+        return retorno;
     }
     
     public static String obtenerExtension(String mime) throws Exception{
+        String retorno = "";
         switch (mime) {
-            case "image/jpg" -> {
-                return ".jpg";
-            }
-            case "image/jpeg" -> {
-                return ".jpeg";
-            }
-            case "image/png" -> {
-                return ".png";
-            }
-                        
-                
-            default -> throw new Exception("Error, tipo de archivo no reconocido");
+            case "image/jpeg":
+                retorno = ".jpg";
+                break;
+            case "image/jpg":
+                retorno = ".jpg";
+                break;
+            case "image/png":
+                retorno = ".png";
+                break;
+            
+            default:
+                retorno = "Error, archivo no admitido";
+                break;
+
         }
+        return retorno;
     }
 }

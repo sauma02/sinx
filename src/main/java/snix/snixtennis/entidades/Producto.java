@@ -34,7 +34,7 @@ public class Producto {
     private Integer stock;
     private String categoria;
     private String marca;
-    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL)
     private List<Archivo> imagenes;
 
     private Double precio;

@@ -13,11 +13,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.lang.Exception;
+import org.springframework.http.HttpMethod;
 
 /**
  *
  * @author sauma
  */
+
+
 @Configuration
 
 public class WebConfig implements WebMvcConfigurer {
@@ -38,8 +41,9 @@ public class WebConfig implements WebMvcConfigurer {
 //            .defaultSuccessUrl("/admin")
 //            .permitAll()
 //           )
+                    .csrf().disable()
                     .authorizeHttpRequests(res -> res
-                    .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**","/admin/**").permitAll()
+                    .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**","/admin/**", "/admin/registrarProducto").permitAll()
                     .anyRequest().authenticated())
                     .build();
         } catch (Exception e) {
