@@ -4,6 +4,8 @@
  */
 package snix.snixtennis.servicios;
 
+import java.util.ArrayList;
+import java.util.List;
 import snix.snixtennis.DTOs.ProductoDTO;
 import snix.snixtennis.entidades.Producto;
 
@@ -26,5 +28,21 @@ public class DTOServicio {
        
        return dto;
     }
+    public List<ProductoDTO> listaDto(List<Producto> productos){
+        
+        List<ProductoDTO> listaDTOS = new ArrayList<>();
+        try {
+            for (Producto producto : productos) {
+                ProductoDTO pro = this.productoToDTO(producto);
+                listaDTOS.add(pro);
+                
+            }
+            return listaDTOS;
+        } catch (Exception e) {
+            return null;
+        }
+ 
+    }
+    
     
 }

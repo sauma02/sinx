@@ -41,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
 //            .defaultSuccessUrl("/admin")
 //            .permitAll()
 //           )
-                    .csrf().disable()
+                    
                     .authorizeHttpRequests(res -> res
                     .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**","/admin/**", "/admin/registrarProducto").permitAll()
                     .anyRequest().authenticated())

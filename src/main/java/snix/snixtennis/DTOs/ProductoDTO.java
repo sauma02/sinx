@@ -22,6 +22,8 @@ public class ProductoDTO {
     private String nombre;
     private String marca;
     private String categoria;
+    private String talla;
+    private String color;
     @Transient
     private List<Archivo> imageUrl;
     private Double precio;

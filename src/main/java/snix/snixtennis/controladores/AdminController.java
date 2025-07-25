@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +44,7 @@ import snix.snixtennis.utils.ArchivoUpload;
  */
 @Controller
 @RequestMapping("/admin")
-@ResponseBody
+
 
 public class AdminController {
 
@@ -57,7 +59,11 @@ public class AdminController {
 
     @Value("${valor.ruta}")
     private String ruta;
-
+    @GetMapping("/registrarProducto")
+    public String registrarProductos(Model model){
+        model.addAttribute("producto", new Producto());
+        return "formularios/registrarProducto";
+    }
     //SECCION PRODUCTO ADMIN
     @GetMapping("/listaProductos")
     @ResponseBody
@@ -83,7 +89,7 @@ public class AdminController {
 
     @PostMapping("/registrarProducto")
     @ResponseBody
-    public ResponseEntity<?> registrarProducto(@RequestPart Producto producto, @RequestParam("archivos") MultipartFile[] files, HttpSession session) {
+    public ResponseEntity<?> registrarProducto(@Valid Producto producto, BindingResult result, @RequestParam("archivos[]") MultipartFile[] files, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         List<Archivo> imagenes = new ArrayList<>();
         Path rutaFinal = Paths.get(ruta + producto.getNombre().trim() + "/".trim());

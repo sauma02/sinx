@@ -12,6 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,21 +33,34 @@ import lombok.Setter;
 
 public class Producto {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @NotEmpty(message ="esta vacio")
     private String id;
+    @NotEmpty(message ="esta vacio")
     private String nombre;
+    @Min(0)
+    @Max(1000000000)
     private Integer stock;
+    @NotEmpty(message ="esta vacio")
     private String categoria;
+    @NotEmpty(message ="esta vacio")
+    private String talla;
+    @NotEmpty(message ="esta vacio")
+    private String color;
+    @NotEmpty(message ="esta vacio")
     private String marca;
+    @NotEmpty(message ="esta vacio")
     @OneToMany(mappedBy="producto", cascade = CascadeType.ALL)
     private List<Archivo> imagenes;
-
+    @DecimalMin("0.0")
+    @DecimalMax("100000000.0")
     private Double precio;
 
-    public Producto(String id, String nombre, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria) {
+    public Producto(String id, String nombre, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria, String talla, String color) {
         this.id = id;
         this.nombre = nombre;
         this.stock = stock;
+        this.color = color;
+        this.talla = talla;
         this.marca = marca;
         this.imagenes = imagenes;
         this.precio = precio;
