@@ -48,9 +48,10 @@ public class Producto {
     private String color;
     @NotEmpty(message ="esta vacio")
     private String marca;
-    @NotEmpty(message ="esta vacio")
-    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Archivo> imagenes;
+    
     @DecimalMin("0.0")
     @DecimalMax("100000000.0")
     private Double precio;

@@ -94,7 +94,19 @@ public class AdminController {
         List<Archivo> imagenes = new ArrayList<>();
         Path rutaFinal = Paths.get(ruta + producto.getNombre().trim() + "/".trim());
         try {
-
+                 if(result.hasErrors()){
+                    StringBuilder errors = new StringBuilder();
+                    result.getFieldErrors().forEach(error ->{
+                       errors.append(error.getField())
+                               .append(": ")
+                               .append(error.getDefaultMessage())
+                               .append("\n");
+                    });
+                    
+                    response.put("clase", "error");
+                    response.put("mensaje", errors.toString());
+                    return ResponseEntity.badRequest().body(response);
+                }
             if (files.length == 0) {
                 producto.setImagenes(imagenes);
                 productoServicio.crearProducto(producto);
@@ -102,11 +114,17 @@ public class AdminController {
                 response.put("clase", "warning");
                 response.put("mensaje", "Se creo el producto sin imagenes");
                 return ResponseEntity.ok().body(response);
+                
             }
+       
             productoServicio.crearProducto(producto);
             Files.createDirectories(rutaFinal);
            
             for (MultipartFile file : files) {
+                if(file == null || file.isEmpty()){
+                    continue;
+                }
+                
                 String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
                 
                 if(nombreArchivo.equals("no")){
@@ -116,7 +134,7 @@ public class AdminController {
                 }
                 
                 
-                if (nombreArchivo != null) {
+               
                     Archivo imagen = new Archivo();
                     imagen.setFileName(nombreArchivo);
                     imagen.setFileType(file.getContentType());
@@ -125,7 +143,7 @@ public class AdminController {
                     
                     archivoServicio.crearArchivo(imagen);
                     imagenes.add(imagen);
-                }
+                
 
             }
             producto.setImagenes(imagenes);
@@ -137,7 +155,7 @@ public class AdminController {
         } catch (Exception e) {
             System.err.print(e.getStackTrace());
             response.put("clase", "error");
-            response.put("mensaje", "Error inesperado encontrado " + e.getMessage());
+            response.put("mensaje", "Error inesperado encontrado " + e.getMessage() + e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 
         }
@@ -155,7 +173,7 @@ public class AdminController {
 
     @PostMapping("/editarProducto")
     @ResponseBody
-    public ResponseEntity<?> editarProductoForm(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile[] files) {
+    public ResponseEntity<?> editarProductoForm(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile[] files, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -169,6 +187,8 @@ public class AdminController {
                     response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
                     return ResponseEntity.badRequest().body(response);
                 }
+                
+                
                 
                 
                 if (nombreArchivo != null) {
