@@ -45,7 +45,6 @@ import snix.snixtennis.utils.ArchivoUpload;
 @Controller
 @RequestMapping("/admin")
 
-
 public class AdminController {
 
     @Autowired
@@ -55,36 +54,28 @@ public class AdminController {
     @Autowired
     private PedidoServicio pedidoServicio;
 
-
-
     @Value("${valor.ruta}")
     private String ruta;
+
     @GetMapping("/registrarProducto")
-    public String registrarProductos(Model model){
+    public String registrarProductos(Model model) {
         model.addAttribute("producto", new Producto());
         return "formularios/registrarProducto";
     }
+
     //SECCION PRODUCTO ADMIN
     @GetMapping("/listaProductos")
-    @ResponseBody
-    public ResponseEntity<?> admin(HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        List<Producto> listarProductos = productoServicio.listarProductos();
-        try {
-            if (listarProductos.isEmpty()) {
-                List<Producto> lista = new ArrayList<>();
-                session.setAttribute("productos", lista);
-                response.put("productos", lista);
-                response.put("mensaje", "La lista esta vacia");
-                return ResponseEntity.ok().body(response);
-            }
-            session.setAttribute("productos", listarProductos);
-            response.put("productos", listarProductos);
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public String listaProductos(Model model) {
+        List<Producto> producto = productoServicio.listarProductos();
+        if (producto.isEmpty()) {
+            model.addAttribute("clase", "error");
+            model.addAttribute("mensaje", "la lista esta vacia");
+
+            return "listarProductos";
         }
+
+        model.addAttribute("productos", producto);
+        return "listarProductos";
     }
 
     @PostMapping("/registrarProducto")
@@ -94,19 +85,19 @@ public class AdminController {
         List<Archivo> imagenes = new ArrayList<>();
         Path rutaFinal = Paths.get(ruta + producto.getNombre().trim() + "/".trim());
         try {
-                 if(result.hasErrors()){
-                    StringBuilder errors = new StringBuilder();
-                    result.getFieldErrors().forEach(error ->{
-                       errors.append(error.getField())
-                               .append(": ")
-                               .append(error.getDefaultMessage())
-                               .append("\n");
-                    });
-                    
-                    response.put("clase", "error");
-                    response.put("mensaje", errors.toString());
-                    return ResponseEntity.badRequest().body(response);
-                }
+            if (result.hasErrors()) {
+                StringBuilder errors = new StringBuilder();
+                result.getFieldErrors().forEach(error -> {
+                    errors.append(error.getField())
+                            .append(": ")
+                            .append(error.getDefaultMessage())
+                            .append("\n");
+                });
+
+                response.put("clase", "error");
+                response.put("mensaje", errors.toString());
+                return ResponseEntity.badRequest().body(response);
+            }
             if (files.length == 0) {
                 producto.setImagenes(imagenes);
                 productoServicio.crearProducto(producto);
@@ -114,36 +105,33 @@ public class AdminController {
                 response.put("clase", "warning");
                 response.put("mensaje", "Se creo el producto sin imagenes");
                 return ResponseEntity.ok().body(response);
-                
+
             }
-       
+
             productoServicio.crearProducto(producto);
             Files.createDirectories(rutaFinal);
-           
+
             for (MultipartFile file : files) {
-                if(file == null || file.isEmpty()){
+                if (file == null || file.isEmpty()) {
                     continue;
                 }
-                
+
                 String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
-                
-                if(nombreArchivo.equals("no")){
+
+                if (nombreArchivo.equals("no")) {
                     response.put("clase", "error");
                     response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
                     return ResponseEntity.badRequest().body(response);
                 }
-                
-                
-               
-                    Archivo imagen = new Archivo();
-                    imagen.setFileName(nombreArchivo);
-                    imagen.setFileType(file.getContentType());
-                    imagen.setProducto(producto);
-                    imagen.setRuta(this.ruta);
-                    
-                    archivoServicio.crearArchivo(imagen);
-                    imagenes.add(imagen);
-                
+
+                Archivo imagen = new Archivo();
+                imagen.setFileName(nombreArchivo);
+                imagen.setFileType(file.getContentType());
+                imagen.setProducto(producto);
+                imagen.setRuta(this.ruta);
+
+                archivoServicio.crearArchivo(imagen);
+                imagenes.add(imagen);
 
             }
             producto.setImagenes(imagenes);
@@ -162,45 +150,65 @@ public class AdminController {
     }
 
     @GetMapping("/editarProducto/{id}")
-    @ResponseBody
-    public ResponseEntity<?> editarProducto(@PathVariable("id") String id, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
+
+    public String editarProducto(@PathVariable("id") String id, HttpSession session, Model model) {
+
         Producto pro = productoServicio.listarProductoPorId(id);
         session.getAttribute("producto");
-        response.put("producto", pro);
-        return ResponseEntity.ok().body(response);
+        model.addAttribute("producto", pro);
+        return "formularios/editarProducto";
+
     }
 
     @PostMapping("/editarProducto")
     @ResponseBody
-    public ResponseEntity<?> editarProductoForm(@RequestBody Producto producto, @RequestParam("archivos") MultipartFile[] files, BindingResult result) {
+    public ResponseEntity<?> editarProductoForm(@Valid Producto producto, @RequestParam("archivos") MultipartFile[] files, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
+        List<Archivo> imagenes = new ArrayList<>();
+        Path rutaFinal = Paths.get(ruta + producto.getNombre().trim() + "/".trim());
 
         try {
+            if (result.hasErrors()) {
+                StringBuilder errors = new StringBuilder();
+                result.getFieldErrors().forEach(error -> {
+                    errors.append(error.getField())
+                            .append(": ")
+                            .append(error.getDefaultMessage())
+                            .append("\n");
+                });
+
+                response.put("clase", "error");
+                response.put("mensaje", errors.toString());
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (files.length == 0) {
+
+                response.put("clase", "warning");
+                response.put("mensaje", "No se modificaron las imagenes");
+                return ResponseEntity.ok().body(response);
+
+            }
             if (producto.getImagenes() == null || producto.getImagenes().isEmpty()) {
-                List<Archivo> imagenes = new ArrayList<>();
+               
                 for (MultipartFile file : files) {
-                   String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
-                
-                if(nombreArchivo.equals("no")){
-                    response.put("clase", "error");
-                    response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
-                    return ResponseEntity.badRequest().body(response);
-                }
-                
-                
-                
-                
-                if (nombreArchivo != null) {
-                    Archivo imagen = new Archivo();
-                    imagen.setFileName(nombreArchivo);
-                    imagen.setFileType(file.getContentType());
-                    imagen.setProducto(producto);
-                    imagen.setRuta(this.ruta);
-                    
-                    archivoServicio.crearArchivo(imagen);
-                    imagenes.add(imagen);
-                }
+                    String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
+
+                    if (nombreArchivo.equals("no")) {
+                        response.put("clase", "error");
+                        response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
+                        return ResponseEntity.badRequest().body(response);
+                    }
+
+                    if (nombreArchivo != null) {
+                        Archivo imagen = new Archivo();
+                        imagen.setFileName(nombreArchivo);
+                        imagen.setFileType(file.getContentType());
+                        imagen.setProducto(producto);
+                        imagen.setRuta(this.ruta);
+
+                        archivoServicio.crearArchivo(imagen);
+                        imagenes.add(imagen);
+                    }
                 }
                 producto.setImagenes(imagenes);
                 productoServicio.editarProducto(producto);
@@ -208,33 +216,32 @@ public class AdminController {
                 response.put("mensaje", "Exito al editar producto");
                 return ResponseEntity.ok().body(response);
             } else {
-                List<Archivo> imagenes = producto.getImagenes();
+                List<Archivo> imagens = producto.getImagenes();
 
                 for (MultipartFile file : files) {
-                   String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
+                    String nombreArchivo = ArchivoUpload.guardarArchivo(file, this.ruta + producto.getNombre() + "/");
                     System.out.println(nombreArchivo);
 
-                if("no".equals(nombreArchivo)){
-                    
-                    response.put("clase", "error");
-                    response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
-                    return ResponseEntity.badRequest().body(response);
-                }
-                
-                
-                if (nombreArchivo != null) {
-                    Archivo imagen = new Archivo();
-                    imagen.setFileName(nombreArchivo);
-                    imagen.setFileType(file.getContentType());
-                    imagen.setProducto(producto);
-                    imagen.setRuta(this.ruta);
-                    
-                    archivoServicio.crearArchivo(imagen);
-                    imagenes.add(imagen);
-                }
+                    if ("no".equals(nombreArchivo)) {
+
+                        response.put("clase", "error");
+                        response.put("mensaje", "error, el archivo no es del formato esperado, solo utilice jpg, jpeg o png");
+                        return ResponseEntity.badRequest().body(response);
+                    }
+
+                    if (nombreArchivo != null) {
+                        Archivo imagen = new Archivo();
+                        imagen.setFileName(nombreArchivo);
+                        imagen.setFileType(file.getContentType());
+                        imagen.setProducto(producto);
+                        imagen.setRuta(this.ruta);
+
+                        archivoServicio.crearArchivo(imagen);
+                        imagenes.add(imagen);
+                    }
 
                 }
-                producto.setImagenes(imagenes);
+                producto.setImagenes(imagens);
                 productoServicio.editarProducto(producto);
                 response.put("clase", "success");
                 response.put("mensaje", "Exito al editar producto");
@@ -254,24 +261,23 @@ public class AdminController {
         Map<String, Object> response = new HashMap<>();
         try {
             Producto pro = productoServicio.listarProductoPorId(id);
-            if(pro.getImagenes().isEmpty()){
-            productoServicio.eliminarProducto(id);
-            response.put("clase", "success");
-            response.put("mensaje", "Producto eliminado con exito");
-            return ResponseEntity.ok().body(response);
-            }else{
-                
-             for(Archivo imagen : pro.getImagenes()){
-                 archivoServicio.eliminarArchivo(imagen);
-             }
-             pro.setImagenes(null);
-             productoServicio.editarProducto(pro);
-             productoServicio.eliminarProducto(id);
-             response.put("clase", "success");
-             response.put("mensaje", "Exito al eliminar producto");
-             return ResponseEntity.ok().body(response);
+            if (pro.getImagenes().isEmpty()) {
+                productoServicio.eliminarProducto(id);
+                response.put("clase", "success");
+                response.put("mensaje", "Producto eliminado con exito");
+                return ResponseEntity.ok().body(response);
+            } else {
+
+                for (Archivo imagen : pro.getImagenes()) {
+                    archivoServicio.eliminarArchivo(imagen);
+                }
+                pro.setImagenes(null);
+                productoServicio.editarProducto(pro);
+                productoServicio.eliminarProducto(id);
+                response.put("clase", "success");
+                response.put("mensaje", "Exito al eliminar producto");
+                return ResponseEntity.ok().body(response);
             }
-           
 
         } catch (Exception e) {
             response.put("clase", "error");

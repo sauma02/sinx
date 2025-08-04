@@ -48,6 +48,9 @@ public class Producto {
     private String color;
     @NotEmpty(message ="esta vacio")
     private String marca;
+    @DecimalMin("0.0")
+    @DecimalMax("100000000.0")
+    private Double rating;
 
     @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Archivo> imagenes;
@@ -56,7 +59,7 @@ public class Producto {
     @DecimalMax("100000000.0")
     private Double precio;
 
-    public Producto(String id, String nombre, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria, String talla, String color) {
+    public Producto(String id, String nombre,Double rating, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria, String talla, String color) {
         this.id = id;
         this.nombre = nombre;
         this.stock = stock;
@@ -66,6 +69,7 @@ public class Producto {
         this.imagenes = imagenes;
         this.precio = precio;
         this.categoria = categoria;
+        this.rating = rating;
     }
     
 

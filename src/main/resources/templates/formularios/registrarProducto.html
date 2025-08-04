@@ -50,6 +50,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
                     </div>
                     <div class="col-md-2">
+                        <label for="inputName" class="form-label">Rating:</label>
+                        <input type="number" name="rating" th:field="*{rating}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+                    <div class="col-md-2">
                         <label for="inputZip" class="form-label">Archivos:</label>
                         <input type="file"  name="archivos[]" class="form-control" id="inputZip" multiple>
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('archivos')}" th:text="${errors.archivos}"></div>
@@ -62,7 +67,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     <div class="col-12">
                         <button type="button" class="btn btn-primary" onclick="registrarProducto(this)">Enviar</button>
-                         <a type="submit" href="/admin" class="btn btn-primary">Regresar</a>
+                         <a type="submit" href="/admin/listaProductos" class="btn btn-primary">Regresar</a>
                     </div>
                     <div th:if="${mensaje != null}" th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
                         <span th:text="${mensaje}"></span> 
