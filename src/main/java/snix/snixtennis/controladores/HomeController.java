@@ -39,7 +39,7 @@ public class HomeController {
 
     @Autowired
     private ProductoServicio productoServicio;
-
+    @Autowired
     private DTOServicio dtoServicio;
 
     @GetMapping("/productos")

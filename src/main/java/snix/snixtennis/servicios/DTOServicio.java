@@ -6,6 +6,7 @@ package snix.snixtennis.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
 import snix.snixtennis.DTOs.ProductoDTO;
 import snix.snixtennis.entidades.Producto;
 
@@ -13,6 +14,7 @@ import snix.snixtennis.entidades.Producto;
  *
  * @author sauma
  */
+@Service
 public class DTOServicio {
     
     
@@ -30,8 +32,9 @@ public class DTOServicio {
     }
     public List<ProductoDTO> listaDto(List<Producto> productos){
         
-        List<ProductoDTO> listaDTOS = new ArrayList<>();
+        
         try {
+            List<ProductoDTO> listaDTOS = new ArrayList<>();
             for (Producto producto : productos) {
                 ProductoDTO pro = this.productoToDTO(producto);
                 listaDTOS.add(pro);
