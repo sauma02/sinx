@@ -51,6 +51,7 @@ public class HomeController {
         try {
             List<Producto> productosOriginal = productoServicio.listarProductos();
             List<ProductoDTO> dtos = dtoServicio.listaDto(productosOriginal);
+            
             response.put("carro", carro);
             response.put("dtos", dtos);
             return ResponseEntity.ok().body(response);

@@ -24,6 +24,7 @@ public class DTOServicio {
        dto.setId(producto.getId());
        dto.setNombre(producto.getNombre());
        dto.setPrecio(producto.getPrecio());
+       dto.setRating(producto.getRating());
        dto.setCategoria(producto.getCategoria());
        dto.setImageUrl(producto.getImagenes());
        dto.setMarca(producto.getMarca());
