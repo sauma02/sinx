@@ -62,6 +62,19 @@ public class HomeController {
         }
 
     }
+    @GetMapping("/productos/detallesProducto/{id}")
+    @ResponseBody
+    public ResponseEntity<?> productoDetalles(@PathVariable String id, HttpSession session){
+        Map<String, Object> response = new HashMap<>();
+        Producto pro = productoServicio.listarProductoPorId(id);
+        ProductoDTO dto = dtoServicio.productoToDTO(pro);
+        
+        session.setAttribute("producto", dto);
+        response.put("dto", dto);
+        
+        return ResponseEntity.ok().body(response);
+        
+    }
 
     @GetMapping
     @ResponseBody

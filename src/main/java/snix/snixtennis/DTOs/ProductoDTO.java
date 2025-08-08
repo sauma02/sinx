@@ -26,6 +26,6 @@ public class ProductoDTO {
     private String color;
     private Double rating;
     @Transient
-    private List<Archivo> imageUrl;
+    private List<String> imageUrl;
     private Double precio;
 }
