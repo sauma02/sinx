@@ -73,26 +73,18 @@ public class HomeController {
             carro = new ArrayList<>();
             response.put("clase", "error");
             response.put("mensaje", "Carrito vacio");
+            ProductoDTO prueba = dtoServicio.dtoGenerico();
+            carro.add(new ItemCarrito(prueba, 2, prueba.getPrecio()));
             response.put("carrito", carro);
             session.setAttribute("carrito", carro);
             return ResponseEntity.ok().body(response);
         }
-        ProductoDTO prueba = dtoServicio.dtoGenerico();
-        carro.add(new ItemCarrito(prueba, 2, prueba.getPrecio()));
+        
         response.put("carrito", carro);
         return ResponseEntity.ok().body(response);
     }
     
-    @PostMapping("/productos/anadirAlCarrito/{id}")
-    @ResponseBody
-    public ResponseEntity<?> anadirAlCarro(@PathVariable String id, HttpSession session){
-        List<ItemCarrito> carro = (List<ItemCarrito>) session.getAttribute("carrito");
-        if(carro == null){
-            carro = new ArrayList<>();
-        }
-        return null;    
-        
-    }
+    
     
     @GetMapping("/productos/recomendados/{id}")
     @ResponseBody
