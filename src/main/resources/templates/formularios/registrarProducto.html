@@ -34,6 +34,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <input type="text" name="categoria" th:field="*{categoria}" class="form-control" id="inputName">
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
                     </div>
+                     <div class="col-12">
+                        <label for="inputName" class="form-label">Detalles:</label>
+                        <input type="text" name="categoria" th:field="*{detalles}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
+                    </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Talla:</label>
                         <input type="text" name="talla" th:field="*{talla}" class="form-control" id="inputName">

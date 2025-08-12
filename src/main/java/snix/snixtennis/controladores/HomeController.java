@@ -6,6 +6,7 @@ package snix.snixtennis.controladores;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +47,13 @@ public class HomeController {
     @ResponseBody
     public ResponseEntity<?> productos(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        List<ItemCarrito> carro =(List<ItemCarrito>) session.getAttribute("carrito");
+        List<ItemCarrito> carro = (List<ItemCarrito>) session.getAttribute("carrito");
 
         try {
             List<Producto> productosOriginal = productoServicio.listarProductos();
             List<ProductoDTO> dtos = dtoServicio.listaDto(productosOriginal);
-            
-            response.put("carro", carro);
+
+            response.put("carrito", carro);
             response.put("dtos", dtos);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
@@ -62,18 +63,88 @@ public class HomeController {
         }
 
     }
+    @GetMapping("/carrito")
+    @ResponseBody
+    public ResponseEntity<?> carrito(HttpSession session){
+        Map<String, Object> response = new HashMap<>();
+        List<ItemCarrito> carro = (List<ItemCarrito>) session.getAttribute(("carrito"));
+        
+        if(carro == null || carro.isEmpty()){
+            carro = new ArrayList<>();
+            response.put("clase", "error");
+            response.put("mensaje", "Carrito vacio");
+            response.put("carrito", carro);
+            session.setAttribute("carrito", carro);
+            return ResponseEntity.ok().body(response);
+        }
+        ProductoDTO prueba = dtoServicio.dtoGenerico();
+        carro.add(new ItemCarrito(prueba, 2, prueba.getPrecio()));
+        response.put("carrito", carro);
+        return ResponseEntity.ok().body(response);
+    }
+    
+    @PostMapping("/productos/anadirAlCarrito/{id}")
+    @ResponseBody
+    public ResponseEntity<?> anadirAlCarro(@PathVariable String id, HttpSession session){
+        List<ItemCarrito> carro = (List<ItemCarrito>) session.getAttribute("carrito");
+        if(carro == null){
+            carro = new ArrayList<>();
+        }
+        return null;    
+        
+    }
+    
+    @GetMapping("/productos/recomendados/{id}")
+    @ResponseBody
+    public ResponseEntity<?> recomendados(@PathVariable String id, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Producto> listaProductos = productoServicio.listarProductos();
+
+            
+            Producto pro = productoServicio.listarProductoPorId(id);
+            List<Producto> listaRecomendado = listaProductos.stream().filter(p -> p.getCategoria().equals(pro.getCategoria()))
+                    .filter(p -> !p.getId().equals(pro.getId()))
+                    .collect(Collectors.toList());
+            if(listaRecomendado.isEmpty() || listaRecomendado == null){
+                response.put("clase", "error");
+                response.put("mensaje", "no hay productos recomendados");
+                return ResponseEntity.ok().body(response);
+            }
+            Collections.shuffle(listaRecomendado);
+            List<Producto> recomendados = listaRecomendado.stream()
+                    .limit(4)
+                    .collect(Collectors.toList());
+
+            List<ProductoDTO> listaRecomendados = dtoServicio.listaDto(recomendados);
+            
+            if(listaRecomendados.isEmpty()){
+                response.put("clase", "error");
+                response.put("mensaje", "la lista es la vacia");
+                return ResponseEntity.ok().body(response);
+            }
+            response.put("recomendados", listaRecomendados);
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.put("error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+    }
+
     @GetMapping("/productos/detallesProducto/{id}")
     @ResponseBody
-    public ResponseEntity<?> productoDetalles(@PathVariable String id, HttpSession session){
+    public ResponseEntity<?> productoDetalles(@PathVariable String id, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         Producto pro = productoServicio.listarProductoPorId(id);
         ProductoDTO dto = dtoServicio.productoToDTO(pro);
-        
+
         session.setAttribute("producto", dto);
         response.put("dto", dto);
-        
+
         return ResponseEntity.ok().body(response);
-        
+
     }
 
     @GetMapping

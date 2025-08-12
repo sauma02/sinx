@@ -45,6 +45,8 @@ public class Producto {
     @NotEmpty(message ="esta vacio")
     private String talla;
     @NotEmpty(message ="esta vacio")
+    private String detalles;
+    @NotEmpty(message ="esta vacio")
     private String color;
     @NotEmpty(message ="esta vacio")
     private String marca;
@@ -59,7 +61,7 @@ public class Producto {
     @DecimalMax("100000000.0")
     private Double precio;
 
-    public Producto(String id, String nombre,Double rating, Integer stock, String marca, List<Archivo> imagenes, Double precio, String categoria, String talla, String color) {
+    public Producto(String id, String nombre,Double rating, Integer stock, String marca, List<Archivo> imagenes, String detalles, Double precio, String categoria, String talla, String color) {
         this.id = id;
         this.nombre = nombre;
         this.stock = stock;
@@ -70,6 +72,7 @@ public class Producto {
         this.precio = precio;
         this.categoria = categoria;
         this.rating = rating;
+        this.detalles = detalles;
     }
     
 

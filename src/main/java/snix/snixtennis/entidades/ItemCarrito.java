@@ -20,4 +20,13 @@ public class ItemCarrito {
     private ProductoDTO dto;
     private Integer cantidad;
     private Double subTotal;
+
+    
+    public ItemCarrito(ProductoDTO dto, Integer cantidad, Double subTotal) {
+        this.dto = dto;
+        this.cantidad = cantidad;
+        this.subTotal = subTotal;
+    }
+    
+    
 }

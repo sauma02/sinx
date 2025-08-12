@@ -20,7 +20,13 @@ import snix.snixtennis.entidades.Producto;
 public class DTOServicio {
     
     
-    
+    public ProductoDTO dtoGenerico(){
+        ProductoDTO prueba = new ProductoDTO();
+        prueba.setNombre("Hola");
+        prueba.setPrecio(20.00);
+        return prueba;
+        
+    }
     public ProductoDTO productoToDTO(Producto producto){
         if(producto == null){
             return null;
@@ -40,6 +46,7 @@ public class DTOServicio {
        dto.setNombre(producto.getNombre());
        dto.setPrecio(producto.getPrecio());
        dto.setRating(producto.getRating());
+       dto.setDetalles(producto.getDetalles());
        dto.setCategoria(producto.getCategoria());
        dto.setImageUrl(urls);
        dto.setMarca(producto.getMarca());
