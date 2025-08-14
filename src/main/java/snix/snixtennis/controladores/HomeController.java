@@ -7,6 +7,7 @@ package snix.snixtennis.controladores;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,13 +64,14 @@ public class HomeController {
         }
 
     }
+
     @GetMapping("/carrito")
     @ResponseBody
-    public ResponseEntity<?> carrito(HttpSession session){
+    public ResponseEntity<?> carrito(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         List<ItemCarrito> carro = (List<ItemCarrito>) session.getAttribute(("carrito"));
-        
-        if(carro == null || carro.isEmpty()){
+
+        if (carro == null || carro.isEmpty()) {
             carro = new ArrayList<>();
             response.put("clase", "error");
             response.put("mensaje", "Carrito vacio");
@@ -79,13 +81,13 @@ public class HomeController {
             session.setAttribute("carrito", carro);
             return ResponseEntity.ok().body(response);
         }
-        
+
         response.put("carrito", carro);
         return ResponseEntity.ok().body(response);
     }
+
     
-    
-    
+
     @GetMapping("/productos/recomendados/{id}")
     @ResponseBody
     public ResponseEntity<?> recomendados(@PathVariable String id, HttpSession session) {
@@ -93,12 +95,11 @@ public class HomeController {
         try {
             List<Producto> listaProductos = productoServicio.listarProductos();
 
-            
             Producto pro = productoServicio.listarProductoPorId(id);
             List<Producto> listaRecomendado = listaProductos.stream().filter(p -> p.getCategoria().equals(pro.getCategoria()))
                     .filter(p -> !p.getId().equals(pro.getId()))
                     .collect(Collectors.toList());
-            if(listaRecomendado.isEmpty() || listaRecomendado == null){
+            if (listaRecomendado.isEmpty() || listaRecomendado == null) {
                 response.put("clase", "error");
                 response.put("mensaje", "no hay productos recomendados");
                 return ResponseEntity.ok().body(response);
@@ -109,8 +110,8 @@ public class HomeController {
                     .collect(Collectors.toList());
 
             List<ProductoDTO> listaRecomendados = dtoServicio.listaDto(recomendados);
-            
-            if(listaRecomendados.isEmpty()){
+
+            if (listaRecomendados.isEmpty()) {
                 response.put("clase", "error");
                 response.put("mensaje", "la lista es la vacia");
                 return ResponseEntity.ok().body(response);
