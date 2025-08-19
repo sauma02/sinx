@@ -11,6 +11,7 @@ import snix.snixtennis.entidades.Carrito;
 import snix.snixtennis.entidades.InformacionCliente;
 import snix.snixtennis.entidades.ItemCarrito;
 import snix.snixtennis.entidades.Pedido;
+import snix.snixtennis.entidades.Producto;
 import snix.snixtennis.repositorios.PedidoRepositorio;
 
 /**
@@ -35,8 +36,18 @@ public class PedidoServicio {
         }
         pedido.setTotal(suma);
         pedidoRepositorio.save(pedido);
+        
         return pedido;
         
+    }
+    public Pedido crearPedidoUnItem(Producto pro, InformacionCliente cliente){
+        Pedido pedido = new Pedido();
+        pedido.setNombre(cliente.getNombre());
+        
+        pedido.setCliente(cliente);
+        pedido.setTotal(pro.getPrecio());
+        pedidoRepositorio.save(pedido);
+        return pedido;
     }
     public List<Pedido> listarPedidos(){
         return pedidoRepositorio.findAll();

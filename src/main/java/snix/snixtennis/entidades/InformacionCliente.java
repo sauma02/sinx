@@ -29,16 +29,20 @@ public class InformacionCliente {
     @NotEmpty(message = "esta vacio")
     private String direccion;
     @NotEmpty(message = "esta vacio")
-    private String contacto;
+    private String celular;
     @NotEmpty(message = "esta vacio")
     private String email;
     @NotEmpty(message = "esta vacio")
+    private String ciudad;
+    @NotEmpty(message = "esta vacio")
+    private String depto;
+    @NotEmpty(message = "esta vacio")
     private String autorizacion;
 
-    public InformacionCliente(String nombre, String direccion, String contacto, String email, String autorizacion) {
+    public InformacionCliente(String nombre, String direccion, String celular, String email, String autorizacion) {
         this.nombre = nombre;
         this.direccion = direccion;
-        this.contacto = contacto;
+        this.celular = celular;
         this.email = email;
         this.autorizacion = autorizacion;
     }

@@ -12,22 +12,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import snix.snixtennis.DTOs.ProductoDTO;
 import snix.snixtennis.entidades.Carrito;
+import snix.snixtennis.entidades.InformacionCliente;
 import snix.snixtennis.entidades.ItemCarrito;
+import snix.snixtennis.entidades.Pedido;
 import snix.snixtennis.entidades.Producto;
+import snix.snixtennis.servicios.ClienteServicio;
 import snix.snixtennis.servicios.DTOServicio;
+import snix.snixtennis.servicios.PedidoServicio;
 import snix.snixtennis.servicios.ProductoServicio;
 
 /**
@@ -35,7 +42,7 @@ import snix.snixtennis.servicios.ProductoServicio;
  * @author sauma
  */
 @Controller
-@CrossOrigin(origins = {"http://127.0.0.1:5500/", "http://127.0.0.1:5500/productos.html"})
+@CrossOrigin(origins = {"http://127.0.0.1:5500/", "http://127.0.0.1:5500/productos.html", "http://127.0.0.1:5500/detallesProducto.html"}, methods = {RequestMethod.POST, RequestMethod.GET})
 @RequestMapping("/home")
 public class HomeController {
 
@@ -43,6 +50,10 @@ public class HomeController {
     private ProductoServicio productoServicio;
     @Autowired
     private DTOServicio dtoServicio;
+    @Autowired
+    private PedidoServicio pedidoServicio;
+    @Autowired
+    private ClienteServicio clienteServicio;
 
     @GetMapping("/productos")
     @ResponseBody
@@ -87,7 +98,47 @@ public class HomeController {
     }
 
     
-
+    @PostMapping("/producto/pedido/form/{id}")
+    @ResponseBody
+    public ResponseEntity<?> formPedido(@Valid InformacionCliente cliente, BindingResult result, @PathVariable String id, HttpSession session){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if(id.isEmpty()){
+                response.put("clase", "error");
+                response.put("mensaje", "Necesita seleccionar un producto");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if(result.hasErrors()){
+                StringBuilder errors = new StringBuilder();
+                result.getFieldErrors().forEach(error -> {
+                errors.append(error.getField())
+                        .append(": ")
+                        .append(error.getDefaultMessage())
+                        .append("\n");
+            });
+                response.put("clase", "error");
+                response.put("mensaje", errors.toString());
+                return ResponseEntity.badRequest().body(response);
+                
+            }
+            Producto pro = productoServicio.listarProductoPorId(id);
+            clienteServicio.crearCliente(cliente);
+            Pedido pedido = pedidoServicio.crearPedidoUnItem(pro, cliente);
+            response.put("clase",  "success");
+            response.put("mensaje", "pedido creado con exito");
+            response.put("pedido", pedido);
+            return ResponseEntity.ok().body(response);
+            
+            
+            
+        } catch (Exception e) {     
+            response.put("clase", "error");
+            response.put("mensaje", e.getMessage());
+            System.err.print("Error al realizar pedido: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        
+        }
+    }
     @GetMapping("/productos/recomendados/{id}")
     @ResponseBody
     public ResponseEntity<?> recomendados(@PathVariable String id, HttpSession session) {

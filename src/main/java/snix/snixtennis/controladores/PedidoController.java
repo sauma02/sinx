@@ -68,7 +68,7 @@ public class PedidoController {
                 response.put("mensaje", "El carrito esta vacio");
                 return ResponseEntity.badRequest().body(response);
             }
-            if(cliente == null || cliente.getNombre() == null|| cliente.getEmail()==null|| cliente.getDireccion()==null || cliente.getContacto() == null){
+            if(cliente == null || cliente.getNombre() == null|| cliente.getEmail()==null|| cliente.getDireccion()==null || cliente.getCelular() == null){
                 response.put("clase", "error");
                 response.put("mensaje", "Porfavor complete todos los campos de informacion");
                 return ResponseEntity.badRequest().body(response);

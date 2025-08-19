@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.lang.Exception;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 /**
  *
@@ -29,6 +30,9 @@ public class WebConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
     
+    
+    
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception{
         try {
@@ -41,7 +45,7 @@ public class WebConfig implements WebMvcConfigurer {
 //            .defaultSuccessUrl("/admin")
 //            .permitAll()
 //           )
-                    
+                    .csrf().disable()
                     .authorizeHttpRequests(res -> res
                     .requestMatchers("/home/**", "/js/**", "/css/**", "/images/**", "/login/**","/static/**","/admin/**", "/admin/registrarProducto").permitAll()
                     .anyRequest().authenticated())
