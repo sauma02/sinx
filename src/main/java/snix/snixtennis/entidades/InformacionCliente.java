@@ -24,12 +24,13 @@ import lombok.Setter;
 public class InformacionCliente {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
     @NotEmpty(message = "esta vacio")
     private String nombre;
     @NotEmpty(message = "esta vacio")
     private String direccion;
     @NotEmpty(message = "esta vacio")
-    private String celular;
+    private String contacto;
     @NotEmpty(message = "esta vacio")
     private String email;
     @NotEmpty(message = "esta vacio")
@@ -39,13 +40,18 @@ public class InformacionCliente {
     @NotEmpty(message = "esta vacio")
     private String autorizacion;
 
-    public InformacionCliente(String nombre, String direccion, String celular, String email, String autorizacion) {
+    public InformacionCliente(String id, String nombre, String direccion, String contacto, String email, String ciudad, String depto, String autorizacion) {
+        this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
-        this.celular = celular;
+        this.contacto = contacto;
         this.email = email;
+        this.ciudad = ciudad;
+        this.depto = depto;
         this.autorizacion = autorizacion;
     }
+
+    
 
     
     

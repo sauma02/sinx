@@ -4,6 +4,7 @@
  */
 package snix.snixtennis.controladores;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,12 +17,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +45,7 @@ import snix.snixtennis.servicios.ProductoServicio;
  * @author sauma
  */
 @Controller
-@CrossOrigin(origins = {"http://127.0.0.1:5500/", "http://127.0.0.1:5500/productos.html", "http://127.0.0.1:5500/detallesProducto.html"}, methods = {RequestMethod.POST, RequestMethod.GET})
+@CrossOrigin(origins = {"http://127.0.0.1:5500/", "http://127.0.0.1:5500/productos.html", "http://127.0.0.1:5500/detallesProducto.html"})
 @RequestMapping("/home")
 public class HomeController {
 
@@ -55,6 +58,16 @@ public class HomeController {
     @Autowired
     private ClienteServicio clienteServicio;
 
+    
+    @GetMapping("/csrf-token")
+    @ResponseBody
+    public ResponseEntity<?> csrfToken (CsrfToken token){
+        Map<String, Object> response = new HashMap<>();
+        response.put("headerName", token.getHeaderName());
+        response.put("parameterName", token.getParameterName());
+        response.put("token", token.getToken());
+        return ResponseEntity.ok().body(response);
+    }
     @GetMapping("/productos")
     @ResponseBody
     public ResponseEntity<?> productos(HttpSession session) {
@@ -64,7 +77,8 @@ public class HomeController {
         try {
             List<Producto> productosOriginal = productoServicio.listarProductos();
             List<ProductoDTO> dtos = dtoServicio.listaDto(productosOriginal);
-
+            
+            
             response.put("carrito", carro);
             response.put("dtos", dtos);
             return ResponseEntity.ok().body(response);
@@ -100,7 +114,7 @@ public class HomeController {
     
     @PostMapping("/producto/pedido/form/{id}")
     @ResponseBody
-    public ResponseEntity<?> formPedido(@Valid InformacionCliente cliente, BindingResult result, @PathVariable String id, HttpSession session){
+    public ResponseEntity<?> formPedido(@Valid @RequestBody InformacionCliente cliente, BindingResult result, @PathVariable String id, HttpSession session){
         Map<String, Object> response = new HashMap<>();
         try {
             if(id.isEmpty()){
