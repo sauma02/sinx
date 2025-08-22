@@ -112,9 +112,9 @@ public class HomeController {
     }
 
     
-    @PostMapping("/producto/pedido/form/{id}")
+    @PostMapping("/producto/pedido/form")
     @ResponseBody
-    public ResponseEntity<?> formPedido(@Valid @RequestBody InformacionCliente cliente, BindingResult result, @PathVariable String id, HttpSession session){
+    public ResponseEntity<?> formPedido(@Valid InformacionCliente cliente, BindingResult result, @RequestParam("productoId") String id, HttpSession session){
         Map<String, Object> response = new HashMap<>();
         try {
             if(id.isEmpty()){
