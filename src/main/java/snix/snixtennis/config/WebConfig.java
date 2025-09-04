@@ -65,9 +65,10 @@ public class WebConfig implements WebMvcConfigurer {
                     .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(res -> res
                     .requestMatchers(HttpMethod.GET, "/home/**", "/js/**", "/css/**", "/images/**", "/login/**", "/static/**", "/admin/**", "/admin/registrarProducto").permitAll()
-                    .requestMatchers(HttpMethod.POST, "home/producto/**").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "home/producto/**").permitAll()
-                    .requestMatchers(HttpMethod.PUT, "home/producto/**").permitAll()
+           
+                    .requestMatchers(HttpMethod.POST, "/admin/**", "home/producto/**").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/admin/**","home/producto/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/admin/**","home/producto/**").permitAll()
                     .anyRequest().authenticated())
                     .build();
         } catch (Exception e) {

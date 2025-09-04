@@ -54,7 +54,7 @@ public class Producto {
     @DecimalMax("100000000.0")
     private Double rating;
 
-    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="producto", cascade = CascadeType.ALL)
     private List<Archivo> imagenes;
     
     @DecimalMin("0.0")
