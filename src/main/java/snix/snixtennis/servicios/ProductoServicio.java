@@ -56,15 +56,8 @@ public class ProductoServicio {
         }
     }
     
-    public void eliminarProducto(String id){
-        Optional<Producto> res = productoRepositorio.findById(id);
-        if(res.isPresent()){
-            Producto pro = res.get();
-            for(Archivo arc : pro.getImagenes()){
-                archivoServicio.eliminarArchivo(arc);
-            }
-            productoRepositorio.delete(pro);
-        }
+    public void eliminarProducto(Producto pro){
+        productoRepositorio.delete(pro);
     }
 
     

@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -255,31 +256,41 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/eliminarProducto/{id}")
+    @DeleteMapping("/eliminarProducto/{id}")
     @ResponseBody
     public ResponseEntity<?> eliminarProducto(@PathVariable("id") String id, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         try {
             Producto pro = productoServicio.listarProductoPorId(id);
+            
+            if(pro == null){
+                response.put("clase", "success");
+                response.put("mensaje", "Producto no encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
             if (pro.getImagenes().isEmpty()) {
-                productoServicio.eliminarProducto(id);
+                productoServicio.eliminarProducto(pro);
                 response.put("clase", "success");
                 response.put("mensaje", "Producto eliminado con exito");
-                return ResponseEntity.ok().body(response);
+                
             } else {
 
                 for (Archivo imagen : pro.getImagenes()) {
-                    archivoServicio.eliminarArchivo(imagen);
+                    
+                    imagen.setProducto(null);
+                   
                 }
-                pro.setImagenes(null);
-                productoServicio.editarProducto(pro);
-                productoServicio.eliminarProducto(id);
+                
+                pro.getImagenes().clear();
+                productoServicio.eliminarProducto(pro);
                 response.put("clase", "success");
                 response.put("mensaje", "Exito al eliminar producto");
-                return ResponseEntity.ok().body(response);
+                
             }
+            return ResponseEntity.ok().body(response);
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.put("clase", "error");
             response.put("mensaje", "Error inesperado " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

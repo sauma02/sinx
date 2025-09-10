@@ -16,6 +16,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <div class="d-flex flex-column">
                         <div class="d-flex mb-2">
                             <a class="btn btn-outline-primary" href="#">Descargar base</a>
+                            <a class="btn btn-outline-success" th:href="@{/admin/registrarProducto}">Registrar producto</a>
                         </div>
                     </div>
 
@@ -62,7 +63,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     </div>
                                     <div class="d-flex">
-                                        <a th:href="@{/admin/editarProducto/${producto.id}}" class="btn btn-success flex-fill mx-2">Editar producto</a>
+
+                                        <a th:href="@{/admin/editarProducto/{id}(id=${producto.id})}" class="btn btn-success flex-fill mx-2">Editar producto</a>
                                     </div>
                                 </div>
 
@@ -87,9 +89,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         function eliminar(element) {
                                             var id = element.getAttribute("data-id");
 
-                                            fetch(`/eliminarProducto/${id}`)
+                                            fetch(`/admin/eliminarProducto/${id}`, {
+                                                method: "DELETE",
+                                                headers: {
+                                                    "content-type": "application/json"
+                                                }
+                                            })
                                                     .then(response => {
+                                                        
                                                         if (response.ok) {
+                                                            console.log("producto eliminado con exito");
                                                             return response.json();
                                                         } else {
                                                             throw new Error('Error al eliminar');
