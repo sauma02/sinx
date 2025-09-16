@@ -4,6 +4,7 @@
  */
 package snix.snixtennis.servicios;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,47 +19,68 @@ import snix.snixtennis.repositorios.ProductoRepositorio;
  */
 @Service
 public class ProductoServicio {
+
     @Autowired
     private ProductoRepositorio productoRepositorio;
     @Autowired
     private ArchivoServicio archivoServicio;
 
-    public List<Producto> listarProductos(){
+    public List<Producto> listarProductos() {
         return productoRepositorio.findAll();
     }
-    public Producto listarProductoPorId(String id){
+
+    public Producto listarProductoPorId(String id) {
         Optional<Producto> res = productoRepositorio.findById(id);
-        if(res.isPresent()){
+        if (res.isPresent()) {
             Producto producto = res.get();
             return producto;
-        }else{
+        } else {
             return null;
         }
-        
+
     }
-    public Producto crearProducto(Producto producto){
-           return productoRepositorio.save(producto);
+
+    public Producto crearProducto(Producto producto) {
+        return productoRepositorio.save(producto);
     }
-    
-    public Producto editarProducto(Producto producto){
+
+    public Producto editarProducto(Producto producto) {
         Optional<Producto> res = productoRepositorio.findById(producto.getId());
-        if(res.isPresent()){
+      
+        if (res.isPresent()) {
+            if (producto.getImagenes() == res.get().getImagenes()) {
+                Producto pro = res.get();
+                pro.setMarca(producto.getMarca());
+                pro.setNombre(producto.getNombre());
+                pro.setPrecio(producto.getPrecio());
+                pro.setStock(producto.getStock());
+                pro.setTalla(producto.getTalla());
+                pro.setCategoria(producto.getCategoria());
+                pro.setColor(producto.getColor());
+                pro.setRating(producto.getRating());
+                productoRepositorio.save(pro);
+                return pro;
+            }
             Producto pro = res.get();
+            
             pro.setImagenes(producto.getImagenes());
             pro.setMarca(producto.getMarca());
             pro.setNombre(producto.getNombre());
             pro.setPrecio(producto.getPrecio());
             pro.setStock(producto.getStock());
+            pro.setTalla(producto.getTalla());
+            pro.setCategoria(producto.getCategoria());
+            pro.setColor(producto.getColor());
+            pro.setRating(producto.getRating());
             productoRepositorio.save(pro);
             return pro;
-        }else{
+        } else {
             return null;
         }
     }
-    
-    public void eliminarProducto(Producto pro){
+
+    public void eliminarProducto(Producto pro) {
         productoRepositorio.delete(pro);
     }
 
-    
 }
