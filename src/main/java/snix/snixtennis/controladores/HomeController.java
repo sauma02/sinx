@@ -100,8 +100,7 @@ public class HomeController {
             carro = new ArrayList<>();
             response.put("clase", "error");
             response.put("mensaje", "Carrito vacio");
-            ProductoDTO prueba = dtoServicio.dtoGenerico();
-            carro.add(new ItemCarrito(prueba, 2, prueba.getPrecio()));
+            
             response.put("carrito", carro);
             session.setAttribute("carrito", carro);
             return ResponseEntity.ok().body(response);
