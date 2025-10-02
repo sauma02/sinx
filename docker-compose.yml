@@ -1,0 +1,11 @@
+version: '3'
+services:
+  aurora:
+    build: snixtennis
+    mem_limit: 512m
+    ports:
+      - '9500:9500'
+    env_file:
+      - .env
+      
+    restart: always

@@ -1,0 +1,52 @@
+### Compilación y dependencias ###
+
+/build/
+/out/
+/bin/
+/classes/
+
+### Archivos de logs ###
+*.log
+
+### Archivos de sistema ###
+.DS_Store
+Thumbs.db
+
+### Configuración de IDEs ###
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+.apt_generated/
+.factorypath
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### Archivos de Maven y Gradle ###
+.mvn/wrapper/maven-wrapper.jar
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+### Archivos temporales ###
+*.swp
+*.swo
+*.tmp
+*.bak
+
+

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})"></head>
+    <body>
+        <header th:replace="layout/frontEnd :: header"></header>
+        <main class="container-fluid">
+            <div id="registrar">
+                <form  class="row g-3" method="POST" enctype="multipart/form-data" >
+                    <div class="col-md-6" >
+                        <label for="id" class="form-label">Id:</label>
+                        <input type="text" name="id" th:value="${producto.id}"  class="form-control" id="id" >
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Nombre:</label>
+                        <input type="text" th:value="${producto.nombre}" name="nombre" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('nombre')}" th:text="${errors.nombre}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Stock:</label>
+                        <input type="text" th:value="${producto.stock}" name="stock"  class="form-control" id="inputEmail4">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('stock')}" th:text="${errors.stock}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Categoria:</label>
+                        <input type="text" th:value="${producto.categoria}" name="categoria"  class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('categoria')}" th:text="${errors.categoria}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Talla:</label>
+                        <input type="text" th:value="${producto.talla}" name="talla"  class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('talla')}" th:text="${errors.talla}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Color:</label>
+                        <input type="text" th:value="${producto.color}"  name="color"  class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('color')}" th:text="${errors.color}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Marca:</label>
+                        <input type="text" th:value="${producto.marca}" name="marca"   class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('marca')}" th:text="${errors.marca}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Rating:</label>
+                        <input type="number" name="rating" th:field="${producto.rating}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="inputZip" class="form-label">Archivos:</label>
+                        <input type="file" name="archivos" class="form-control" id="inputZip" multiple  accept=".jpg,.jpeg,.png">
+
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Precio:</label>
+                        <input type="number" name="precio" th:field="${producto.precio}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('precio')}" th:text="${errors.precio}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Detalles:</label>
+                        <input type="text" name="detalles" th:field="${producto.detalles}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('precio')}" th:text="${errors.precio}"></div>
+                    </div>
+
+
+                    <div class="col-12">
+                        <a onclick="editarProducto(this)" class="btn btn-primary">Editar</a>
+                        <a  th:href="@{/admin/listaProductos}" class="btn btn-danger">Regresar</a>
+                    </div>
+                    <div th:if="${mensaje != null}" 
+                         th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
+                        <span th:text="${mensaje}"></span> 
+                        <button th:if="${mensaje != null}" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                </form>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+            <footer th:replace="layout/frontEnd :: footer"></footer>
+
+            <div th:replace="layout/frontEnd :: scripts"></div>
+            <script th:inline="javascript">
+
+
+                function editarProducto(element) {
+                    let form = element.closest("form");
+                    let idElement = document.getElementById("id");
+
+                    // Check if form and id element exist
+                    if (!form) {
+                        console.error("Form not found");
+                        return;
+                    }
+
+                    if (!idElement) {
+                        console.error("ID element not found");
+                        return;
+                    }
+
+                    let id = idElement.value; // Get the VALUE of the element
+                    var formData = new FormData(form);
+
+                    // Debug: Log form data contents
+                    console.log("Form data contents:");
+                    for (let [key, value] of formData.entries()) {
+                        console.log(key, value);
+                    }
+
+                    // Show loading indicator
+                    Swal.fire({
+                        title: 'Procesando...',
+                        text: 'Por favor espere',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/admin/editarProducto/${id}`, {
+                        method: 'POST',
+                        body: formData
+                                // Don't set Content-Type header - let browser set it with boundary for multipart
+                    })
+                            .then(response => {
+                                // Check if response is ok
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                Swal.close(); // Close loading indicator
+
+                                if (data.clase === 'error') {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Error",
+                                        text: data.mensaje
+                                    });
+                                } else if (data.clase === 'warning') {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "Advertencia",
+                                        text: data.mensaje
+                                    }).then(() => {
+                                        // Handle warning response if needed
+                                    });
+                                } else if (data.clase === 'success') {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Éxito",
+                                        text: data.mensaje
+                                    }).then(() => {
+                                        console.log("Éxito");
+                                        // Optionally reload the page or update the UI
+                                        // location.reload();
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.close(); // Close loading indicator
+                                console.error('Error:', error);
+
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error inesperado",
+                                    text: "Error de respuesta en el servidor: " + error.message // Fixed: was 'mensaje'
+                                });
+                            });
+                }
+
+
+
+            </script>
+        </main>
+    </body>
+</html>

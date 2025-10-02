@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})"></head>
+    <body >
+        <header th:replace="layout/frontEnd :: header"></header>
+        <main class="container-fluid">
+
+
+            <table id="productos" class="table table-striped mt-3" >
+                <thead>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex mb-2">
+                            <a class="btn btn-outline-primary" href="#">Descargar base</a>
+                            <a class="btn btn-outline-success" th:href="@{/admin/registrarProducto}">Registrar producto</a>
+                        </div>
+                    </div>
+
+                    <tr>
+                        <th>Id: </th>
+                        <th>Nombre: </th>
+                        <th>Stock: </th>
+                        <th>Categoria: </th>
+                        <th>Talla: </th>
+                        <th>Color: </th>
+                        <th>Precio:</th>
+                        <th>Marca: </th>
+                        <th>Rating: </th>
+                        <th>imagenes: </th>
+                        <th>Acciones: </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${clase == error}">
+                        <td th:value="${mensaje}" colspan="8"></td>
+                    </tr>
+                    <tr th:each="producto : ${productos}">
+                        <td th:text="${producto.id}"></td>
+                        <td th:text="${producto.nombre}"></td>
+                        <td th:text="${producto.stock}"></td>
+                        <td th:text="${producto.categoria}"></td>
+                        <td th:text="${producto.talla}"></td>
+                        <td th:text="${producto.color}"></td>
+                        <td th:text="${producto.precio}"></td>
+                        <td th:text="${producto.marca}"></td>
+                        <td th:text="${producto.rating}"></td>
+                        <td>
+                            <span th:if="${producto.imagenes == null}">No hay archivos seleccionados</span>
+                            <span th:if="${producto.imagenes != null}">
+                                <ul>
+                                    <li th:each="archivo : ${producto.imagenes}"><img th:src="${archivo.ruta}"></li>
+                                </ul>
+                            </span>
+                        </td>
+                        
+                        <td>
+                            <hr>
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex mb-3"> <!-- Mayor margen inferior -->
+                                        <a href="#" class="btn btn-danger flex-fill mx-2" th:data-id="${producto.id}" onclick="eliminar(this)">Eliminar producto</a>
+
+                                    </div>
+                                    <div class="d-flex">
+
+                                        <a th:href="@{/admin/editarProducto/{id}(id=${producto.id})}" class="btn btn-success flex-fill mx-2">Editar producto</a>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                    </td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+
+
+
+                                    </main>
+
+                                  
+                                    <footer th:replace="layout/frontEnd :: footer"></footer>
+
+                                    <div th:replace="layout/frontEnd :: scripts">
+
+                                    </div>
+                                    <script th:inline="javascript">
+
+                                        function eliminar(element) {
+                                            var id = element.getAttribute("data-id");
+
+                                            fetch(`/admin/eliminarProducto/${id}`, {
+                                                method: "DELETE",
+                                                headers: {
+                                                    "content-type": "application/json"
+                                                }
+                                            })
+                                                    .then(response => {
+                                                        
+                                                        if (response.ok) {
+                                                            console.log("producto eliminado con exito");
+                                                            return response.json();
+                                                        } else {
+                                                            throw new Error('Error al eliminar');
+                                                        }
+                                                    })
+                                                    .then(data => {
+                                                        var estado = data.clase;
+                                                        var mensaje = data.mensaje;
+
+                                                        if (estado === 'success') {
+                                                            Swal.fire({
+                                                                icon: "success",
+                                                                title: "Éxito",
+                                                                text: mensaje
+                                                            }).then(() => {
+                                                                setTimeout(() => {
+                                                                    location.reload();
+                                                                }, 0); // Espera 1 segundo antes de recargar
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: "error",
+                                                                title: "Error",
+                                                                text: mensaje
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                    });
+                                        }
+                                        
+
+
+
+
+
+                                     
+                                        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                                        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                                     
+
+
+
+
+                                        $(document).ready(function () {
+                                            $('#productos').DataTable();
+                                        }
+                                        );
+
+
+
+
+
+
+                                    </script>
+
+
+
+                                    </body>
+                                    </html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
+
+    </head>
+    <body class="container">
+        <main class="container-fluid">
+            <div id="registrar" style="">
+                <form th:action="@{/admin/registrarProducto}" th:object="${producto}" class="row g-3" method="POST" enctype="multipart/form-data">
+                    
+                 
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Id:</label>
+                        <input type="text" name="id" th:field="*{id}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('nombre')}" th:text="${errors.nombre}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Nombre:</label>
+                        <input type="text" name="nombre" th:field="*{nombre}" class="form-control" id="inputEmail4">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('correo')}" th:text="${errors.correo}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Stock:</label>
+                        <input type="text" name="stock" th:field="*{stock}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('contacto')}" th:text="${errors.contacto}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Categoria:</label>
+                        <input type="text" name="categoria" th:field="*{categoria}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
+                    </div>
+                     <div class="col-12">
+                        <label for="inputName" class="form-label">Detalles:</label>
+                        <input type="text" name="categoria" th:field="*{detalles}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Talla:</label>
+                        <input type="text" name="talla" th:field="*{talla}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Color:</label>
+                        <input type="text" name="color" th:field="*{color}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaExpedicion')}" th:text="${errors.fechaExpedicion}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Marca:</label>
+                        <input type="text" name="marca" th:field="*{marca}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Rating:</label>
+                        <input type="number" name="rating" th:field="*{rating}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputZip" class="form-label">Archivos:</label>
+                        <input type="file"  name="archivos[]" class="form-control" id="inputZip" multiple>
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('archivos')}" th:text="${errors.archivos}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Precio</label>
+                        <input type="number" name="precio" th:field="*{precio}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="button" class="btn btn-primary" onclick="registrarProducto(this)">Enviar</button>
+                         <a type="submit" href="/admin/listaProductos" class="btn btn-primary">Regresar</a>
+                    </div>
+                    <div th:if="${mensaje != null}" th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
+                        <span th:text="${mensaje}"></span> 
+                        <button th:if="${mensaje != null}" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </form>
+            </div>
+
+
+        </main>
+    </body>
+    <div th:replace="layout/frontEnd :: scripts"></div>
+    <script th:inline="javascript">
+       // const token = document.querySelector('meta[name="_csrf"]').content;
+        //const header = document.querySelector('meta[name="_csrf_header"]').content;
+        
+        
+        function registrarProducto(element){
+            let form = element.closest("form");
+       
+            var formData = new FormData(form);
+     
+                
+          
+            fetch('/admin/registrarProducto', {
+              method: 'POST',
+              body: formData  
+            }).then(response => response.json())
+              .then(data =>{
+                if(data.clase === 'error'){
+                    Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: data.mensaje
+                });
+               
+             
+                }else if(data.clase === 'warning'){
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Advertencia",
+                        text: data.mensaje
+                    }).then(() =>{
+                        location.reload();
+                    });
+                   
+                }else if(data.clase === 'success'){
+                    Swal.fire({
+                        icon: "success",
+                        title: "Exito",
+                        text: data.mensaje
+                    }).then(() =>{
+                        location.reload();
+                    });
+                }
+                
+            }).catch(error =>{
+                Swal.fire({
+                    icon: "error",
+                    title: "Error inesperado",
+                    mensaje: "Error de respuesta en el servidor"
+                });
+            });
+            
+            
+            
+            
+            
+        }
+        
+        
+    
+
+    </script>
+</html>
